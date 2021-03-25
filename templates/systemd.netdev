@@ -1,0 +1,19 @@
+[NetDev]
+Name=wg0
+Kind=wireguard
+Description=WireGuard tunnel wg0
+
+[WireGuard]
+ListenPort={{ wireguard_port }}
+PrivateKey={{ wireguard_private_key.stdout }}
+
+{% for peer in groups['all'] %}
+{% if peer != inventory_hostname %}
+
+[WireGuardPeer]
+PublicKey={{ hostvars[peer].wireguard_public_key.stdout }}
+PresharedKey={{ wireguard_preshared_keys[peer] if inventory_hostname < peer else hostvars[peer].wireguard_preshared_keys[inventory_hostname] }}
+AllowedIPs={{ hostvars[peer].wireguard_ip }}/32
+Endpoint={{ hostvars[peer].ansible_host }}:{{ wireguard_port }}
+{% endif %}
+{% endfor %}

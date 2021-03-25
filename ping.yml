@@ -1,0 +1,7 @@
+---
+- hosts: all
+  gather_facts: yes
+  tasks:
+    - name: ping
+      command: "ping -c3 {{ hostvars[item].wireguard_ip }}"
+      with_items: "{{ groups['all'] }}"
